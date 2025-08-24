@@ -1,0 +1,23 @@
+name: Sync Upstream
+
+on:
+  schedule:
+    - cron: '0 3 * * *' # run daily at 3 AM UTC
+  workflow_dispatch:     # allow manual run
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout fork
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ github.repository }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Add upstream
+        run: |
+          git remote add upstream https://github.com/comfyanonymous/ComfyUI.git
+          git fetch upstream
+          git merge upstream/master --no-edit || true
+          git push origin HEAD:master
